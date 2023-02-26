@@ -13,7 +13,7 @@ import { useState } from "react";
 
 // https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/sign_up
 
-export default function SignUpScreen({ setToken }) {
+export default function SignUpScreen({ setToken, setId }) {
   const [email, setEmail] = useState("test44@mail.com");
   const [username, setUsername] = useState("test44");
   const [password, setPassword] = useState("azerty");
@@ -59,6 +59,7 @@ export default function SignUpScreen({ setToken }) {
       if (response.data) {
         console.log(response.data);
         setToken(response.data.token);
+        setId(response.data.id);
       }
     } catch (error) {
       // 3 - BACK  Vérifier que l'email soit dispo

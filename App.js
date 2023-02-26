@@ -1,9 +1,15 @@
+// exercice realisé completement
+
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  AntDesign,
+} from "@expo/vector-icons";
 import { Image } from "react-native";
 import HomeScreen from "./containers/HomeScreen";
 import ProfileScreen from "./containers/ProfileScreen";
@@ -21,27 +27,38 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   const setToken = async (token) => {
     if (token) {
       await AsyncStorage.setItem("userToken", token);
+      setUserToken(token);
     } else {
       await AsyncStorage.removeItem("userToken");
+      setUserToken(null);
     }
-
-    setUserToken(token);
   };
 
+  // save or remove id in AsyncStorage & state
+  const setId = async (id) => {
+    if (id) {
+      AsyncStorage.setItem("userId", id);
+      setUserId(id);
+    } else {
+      AsyncStorage.removeItem("userId");
+      setUserId(null);
+    }
+  };
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       // We should also handle error for production apps
       const userToken = await AsyncStorage.getItem("userToken");
-
+      const userId = await AsyncStorage.getItem("userId");
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
       setUserToken(userToken);
-
+      setUserId(userId);
       setIsLoading(false);
     };
 
@@ -60,10 +77,10 @@ export default function App() {
           // No token found, user isn't signed in
           <>
             <Stack.Screen name="SignIn">
-              {() => <SignInScreen setToken={setToken} />}
+              {() => <SignInScreen setToken={setToken} setId={setId} />}
             </Stack.Screen>
             <Stack.Screen name="SignUp">
-              {() => <SignUpScreen setToken={setToken} />}
+              {() => <SignUpScreen setToken={setToken} setId={setId} />}
             </Stack.Screen>
           </>
         ) : (
@@ -178,6 +195,36 @@ export default function App() {
                         }}
                       >
                         {() => <SettingsScreen setToken={setToken} />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+                <Tab.Screen
+                  name="ProfileTab"
+                  options={{
+                    tabBarLabel: "My profile",
+                    tabBarIcon: ({ color, size }) => (
+                      <AntDesign name="user" size={size} color={color} />
+                    ),
+                  }}
+                >
+                  {() => (
+                    <Stack.Navigator screenOptions={{ headerShown: true }}>
+                      <Stack.Screen
+                        name="Profile"
+                        options={{
+                          headerTitle: () => <Logo size={"small"} />,
+                        }}
+                      >
+                        {(props) => (
+                          <ProfileScreen
+                            {...props}
+                            userToken={userToken}
+                            userId={userId}
+                            setToken={setToken}
+                            setId={setId}
+                          />
+                        )}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}

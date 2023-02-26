@@ -65,7 +65,7 @@ export default function AroundMeScreen({ navigation }) {
             description={data.description}
             onPress={() => {
               navigation.navigate("Room", {
-                roomId: data._id,
+                id: data._id,
               });
             }}
           />

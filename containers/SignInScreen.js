@@ -12,10 +12,10 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/core";
 
-export default function SignInScreen({ setToken }) {
+export default function SignInScreen({ setToken, setId }) {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("sorakol@gmx.fr");
-  const [password, setPassword] = useState("pass");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const submit = async () => {
@@ -41,6 +41,7 @@ export default function SignInScreen({ setToken }) {
       if (response.data) {
         console.log(response.data);
         setToken(response.data.token);
+        setId(response.data.id);
       }
     } catch (error) {
       // 3 - BACK  Vérifier que l'email soit dispo
